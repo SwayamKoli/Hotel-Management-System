@@ -1,0 +1,37 @@
+/**
+ * ============================================================
+ * Hotel Management System
+ * Configuration File
+ * ============================================================
+ */
+
+const CONFIG = {
+
+  SHEETS: {
+    DASHBOARD: "Dashboard",
+    ROOMS: "Rooms",
+    GUESTS: "Guests",
+    BOOKINGS: "Bookings",
+    HISTORY: "History",
+    REVENUE: "Revenue",
+    MAINTENANCE: "Maintenance",
+    STAFF: "Staff",
+    INVENTORY: "Inventory",
+    HOUSEKEEPING: "Housekeeping",
+    REPORTS: "Reports",
+    LOGS: "Logs",
+    SETTINGS: "Settings"
+  },
+
+  PREFIX: {
+    ROOM: "RM",
+    GUEST: "GST",
+    BOOKING: "BK",
+    INVOICE: "INV",
+    MAINTENANCE: "MT",
+    STAFF: "STF",
+    INVENTORY: "ITM",
+    HOUSEKEEPING: "HK"
+  }
+
+};

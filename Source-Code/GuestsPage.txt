@@ -1,0 +1,99 @@
+<template id="guestsPage">
+
+<div class="page-header flex-between">
+
+    <div>
+
+        <h2>Guest Management</h2>
+
+        <p class="page-subtitle">
+            Manage guests, room allocation and check-ins
+        </p>
+
+    </div>
+
+    <button
+        id="addGuestBtn"
+        class="btn btn-primary">
+
+        + Add Guest
+
+    </button>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<div class="flex-between">
+
+<input
+id="guestSearch"
+type="text"
+placeholder="Search by Name / Mobile / Room"
+style="max-width:350px;">
+
+<div>
+
+<select id="guestStatusFilter">
+
+<option value="">All Status</option>
+
+<option value="Pending">Pending</option>
+
+<option value="Checked In">Checked In</option>
+
+<option value="Checked Out">Checked Out</option>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Guest</th>
+
+<th>Mobile</th>
+
+<th>Room</th>
+
+<th>Guests</th>
+
+<th>Check In</th>
+
+<th>Check Out</th>
+
+<th>Payment</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="guestTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</template>

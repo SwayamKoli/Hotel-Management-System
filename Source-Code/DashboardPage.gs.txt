@@ -1,0 +1,139 @@
+<template id="dashboardPage">
+
+<div class="dashboard-page">
+
+    <div class="grid grid-4">
+
+        <div class="stat-card">
+            <div class="stat-title">Total Rooms</div>
+            <div class="stat-value" id="totalRooms">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Occupied Rooms</div>
+            <div class="stat-value" id="occupiedRooms">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Available Rooms</div>
+            <div class="stat-value" id="availableRooms">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Total Guests</div>
+            <div class="stat-value" id="totalGuests">0</div>
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="grid grid-2">
+
+        <div class="card">
+
+            <h3>Room Status</h3>
+
+            <br>
+
+            <table>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Occupied</td>
+
+                        <td id="occupiedCount">0</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Available</td>
+
+                        <td id="availableCount">0</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Maintenance</td>
+
+                        <td id="maintenanceCount">0</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Quick Actions</h3>
+
+            <br>
+
+            <button class="btn btn-primary" id="dashboardAddGuest">
+                + Add Guest
+            </button>
+
+            <br><br>
+
+            <button class="btn btn-success" id="dashboardAddBooking">
+                + New Booking
+            </button>
+
+            <br><br>
+
+            <button class="btn btn-secondary" id="dashboardViewRooms">
+                View Rooms
+            </button>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <h3>Recent Guests</h3>
+
+        <br>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Room</th>
+
+                        <th>Check In</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="recentGuestsTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</template>

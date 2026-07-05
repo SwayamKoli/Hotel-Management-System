@@ -1,0 +1,131 @@
+function getPage(page){
+
+switch(page){
+
+case "dashboard":
+
+return HtmlService
+.createHtmlOutputFromFile("DashboardPage")
+.getContent();
+
+case "rooms":
+
+return HtmlService
+.createHtmlOutputFromFile("Rooms")
+.getContent();
+
+case "guests":
+
+return HtmlService
+.createHtmlOutputFromFile("Guests")
+.getContent();
+
+case "bookings":
+
+return HtmlService
+.createHtmlOutputFromFile("Bookings")
+.getContent();
+
+case "reports":
+
+return HtmlService
+.createHtmlOutputFromFile("Reports")
+.getContent();
+
+case "settings":
+
+return HtmlService
+.createHtmlOutputFromFile("Settings")
+.getContent();
+
+default:
+
+return "<h2>Page Not Found</h2>";
+
+}
+
+}
+
+/* ---------- Dashboard ---------- */
+
+/**
+ * Returns Live Dashboard Statistics
+ */
+function getDashboardStats() {
+
+  const rooms = getRooms();
+
+  let available = 0;
+  let occupied = 0;
+  let maintenance = 0;
+  let cleaning = 0;
+
+  rooms.forEach(room => {
+
+    switch ((room.status || "").toLowerCase()) {
+
+      case "available":
+        available++;
+        break;
+
+      case "occupied":
+        occupied++;
+        break;
+
+      case "maintenance":
+        maintenance++;
+        break;
+
+      case "cleaning":
+        cleaning++;
+        break;
+
+    }
+
+  });
+
+  return {
+
+    availableRooms: available,
+    occupiedRooms: occupied,
+    maintenanceRooms: maintenance,
+    cleaningRooms: cleaning,
+    activity: []
+
+  };
+
+}
+
+/**
+ * Recent Booking List
+ */
+function getRecentBookings() {
+
+  const sheet = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getSheetByName("Bookings");
+
+  const data = sheet.getDataRange().getValues();
+
+  const list = [];
+
+  for (let i = data.length - 1; i > 0; i--) {
+
+    list.push(
+
+      data[i][2] +
+
+      " → Room " +
+
+      data[i][3]
+
+    );
+
+    if (list.length >= 5)
+      break;
+
+  }
+
+  return list;
+
+}

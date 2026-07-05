@@ -1,0 +1,75 @@
+<template id="roomsPage">
+
+<div class="flex-between" style="margin-bottom:20px;">
+
+    <div>
+
+        <h2>Room Management</h2>
+
+        <p>Manage all Hotel rooms</p>
+
+    </div>
+
+    <div style="display:flex;gap:10px;">
+
+        <input
+            id="roomSearch"
+            type="text"
+            placeholder="Search Room">
+
+        <select id="roomStatusFilter">
+
+            <option value="">All Status</option>
+            <option>Available</option>
+            <option>Occupied</option>
+            <option>Maintenance</option>
+            <option>Cleaning</option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Room No</th>
+
+<th>Floor</th>
+
+<th>Type</th>
+
+<th>Bed</th>
+
+<th>Capacity</th>
+
+<th>Price</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="roomsTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</template>

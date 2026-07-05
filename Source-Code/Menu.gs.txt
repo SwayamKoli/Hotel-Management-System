@@ -1,0 +1,71 @@
+/**
+ * ============================================================
+ * Custom Menu
+ * ============================================================
+ */
+
+function onOpen() {
+
+  SpreadsheetApp.getUi()
+
+    .createMenu("Hotel Management")
+
+    .addItem("Open Application","openApplication")
+
+    .addSeparator()
+
+    .addItem("Room Management", "showRoomManager")
+
+    .addItem("Guest Registration", "showGuestForm")
+
+    .addItem("New Booking", "showBookingForm")
+
+    .addSeparator()
+
+    .addItem("Check In", "checkIn")
+
+    .addItem("Check Out", "checkOut")
+
+    .addSeparator()
+
+    .addItem("Generate Reports", "generateReports")
+
+    .addItem("Refresh Dashboard", "refreshDashboard")
+
+    .addToUi();
+
+}
+
+function openDashboard() {
+
+  const stats = getDashboardStats();
+
+  SpreadsheetApp.getUi().alert(
+
+`🏨 Hotel Management Dashboard
+
+Total Rooms : ${stats.totalRooms}
+
+Available : ${stats.available}
+
+Occupied : ${stats.occupied}
+
+Reserved : ${stats.reserved}
+
+Maintenance : ${stats.maintenance}`
+
+  );
+
+}
+
+function showGuestForm(){}
+
+function showBookingForm(){}
+
+function checkIn(){}
+
+function checkOut(){}
+
+function generateReports(){}
+
+function refreshDashboard(){}

@@ -1,0 +1,323 @@
+/**
+ * ==========================================================
+ * Guest Manager
+ * ==========================================================
+ */
+
+/**
+ * Get Available Rooms
+ */
+function getAvailableRooms() {
+
+  const sheet = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getSheetByName(CONFIG.SHEETS.ROOMS);
+
+  const data = sheet.getDataRange().getValues();
+
+  const rooms = [];
+
+  for (let i = 1; i < data.length; i++) {
+
+    if (String(data[i][7]).toLowerCase() == "available") {
+
+      rooms.push({
+        roomId: data[i][0],
+        roomNumber: data[i][1],
+        roomType: data[i][3]
+      });
+
+    }
+
+  }
+
+  return rooms;
+
+}
+
+/**
+ * Save Guest
+ */
+function saveGuest(data) {
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const guestSheet = ss.getSheetByName(CONFIG.SHEETS.GUESTS);
+
+  const roomSheet = ss.getSheetByName(CONFIG.SHEETS.ROOMS);
+
+  const bookingSheet = ss.getSheetByName(CONFIG.SHEETS.BOOKINGS);
+
+  const guestId = "GST" + Utilities.formatDate(
+    new Date(),
+    Session.getScriptTimeZone(),
+    "yyyyMMddHHmmss"
+  );
+
+  const bookingId = "BK" + Utilities.formatDate(
+    new Date(),
+    Session.getScriptTimeZone(),
+    "yyyyMMddHHmmss"
+  );
+
+  guestSheet.appendRow([
+
+    guestId,
+
+    data.name,
+
+    data.mobile,
+
+    "",
+
+    data.email,
+
+    data.aadhaar,
+
+    "", "", "", "", "", "", "", "",
+
+    data.guests,
+
+    data.checkIn,
+
+    data.checkOut,
+
+    data.roomNumber,
+
+    data.roomType,
+
+    "Pending",
+
+    "Cash",
+
+    "",
+
+    new Date(),
+
+    new Date()
+
+  ]);
+
+  try {
+
+  bookingSheet.appendRow([
+
+    bookingId,
+
+    guestId,
+
+    data.name,
+
+    data.roomNumber,
+
+    data.roomType,
+
+    data.checkIn,
+
+    data.checkOut,
+
+    "", "", "", "", "", "", "", "",
+
+    "Pending",
+
+    "Booked",
+
+    "Admin",
+
+    new Date()
+
+  ]);
+
+  Logger.log("Booking row added successfully.");
+
+} catch (e) {
+
+  Logger.log("BOOKING ERROR: " + e);
+
+  throw e;
+
+}
+
+  const rooms = roomSheet.getDataRange().getValues();
+
+  for (let i = 1; i < rooms.length; i++) {
+
+    if (rooms[i][1] == data.roomNumber) {
+
+      roomSheet.getRange(i + 1, 8).setValue("Occupied");
+
+      break;
+
+    }
+
+  }
+
+  return true;
+
+}
+
+function getGuests() {
+
+  const sheet = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getSheetByName(CONFIG.SHEETS.GUESTS);
+
+  const data = sheet.getDataRange().getValues();
+
+  if (data.length <= 1) return [];
+
+  const guests = [];
+
+  for (let i = 1; i < data.length; i++) {
+
+    guests.push({
+
+      guestID: String(data[i][0] || ""),
+      name: String(data[i][1] || ""),
+      mobile: String(data[i][2] || ""),
+      alternateMobile: String(data[i][3] || ""),
+      email: String(data[i][4] || ""),
+      aadhaar: String(data[i][5] || ""),
+      address: String(data[i][6] || ""),
+      city: String(data[i][7] || ""),
+      state: String(data[i][8] || ""),
+      country: String(data[i][9] || ""),
+      pincode: String(data[i][10] || ""),
+      gender: String(data[i][11] || ""),
+      dob: data[i][12]
+        ? Utilities.formatDate(
+            new Date(data[i][12]),
+            Session.getScriptTimeZone(),
+            "yyyy-MM-dd"
+          )
+        : "",
+
+      nationality: String(data[i][13] || ""),
+
+      guests: Number(data[i][14] || 0),
+
+      checkIn: data[i][15]
+        ? Utilities.formatDate(
+            new Date(data[i][15]),
+            Session.getScriptTimeZone(),
+            "yyyy-MM-dd"
+          )
+        : "",
+
+      checkOut: data[i][16]
+        ? Utilities.formatDate(
+            new Date(data[i][16]),
+            Session.getScriptTimeZone(),
+            "yyyy-MM-dd"
+          )
+        : "",
+
+      roomNumber: String(data[i][17] || ""),
+      roomType: String(data[i][18] || ""),
+      paymentStatus: String(data[i][19] || ""),
+      paymentMode: String(data[i][20] || ""),
+      remarks: String(data[i][21] || ""),
+
+      createdOn: data[i][22]
+        ? Utilities.formatDate(
+            new Date(data[i][22]),
+            Session.getScriptTimeZone(),
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : "",
+
+      updatedOn: data[i][23]
+        ? Utilities.formatDate(
+            new Date(data[i][23]),
+            Session.getScriptTimeZone(),
+            "yyyy-MM-dd HH:mm:ss"
+          )
+        : ""
+
+    });
+
+  }
+
+  return guests;
+
+}
+
+function getGuestById(id){
+
+  const guests=getGuests();
+
+  return guests.find(g=>g.guestID==id);
+
+}
+
+function deleteGuest(id){
+
+  const sheet=SpreadsheetApp
+  .getActiveSpreadsheet()
+  .getSheetByName(CONFIG.SHEETS.GUESTS);
+
+  const data=sheet.getDataRange().getValues();
+
+  for(let i=1;i<data.length;i++){
+
+    if(data[i][0]==id){
+
+      sheet.deleteRow(i+1);
+
+      return true;
+
+    }
+
+  }
+
+  throw new Error("Guest not found");
+
+}
+
+function updateGuest(data){
+
+  const sheet=SpreadsheetApp
+  .getActiveSpreadsheet()
+  .getSheetByName(CONFIG.SHEETS.GUESTS);
+
+  const values=sheet.getDataRange().getValues();
+
+  for(let i=1;i<values.length;i++){
+
+    if(values[i][0]==data.guestID){
+
+      sheet.getRange(i+1,2,1,21).setValues([[
+        data.name,
+        data.mobile,
+        data.alternateMobile,
+        data.email,
+        data.aadhaar,
+        data.address,
+        data.city,
+        data.state,
+        data.country,
+        data.pincode,
+        data.gender,
+        data.dob,
+        data.nationality,
+        data.guests,
+        data.checkIn,
+        data.checkOut,
+        data.roomNumber,
+        data.roomType,
+        data.paymentStatus,
+        data.paymentMode,
+        data.remarks
+      ]]);
+
+      sheet.getRange(i+1,24).setValue(new Date());
+
+      return true;
+
+    }
+
+  }
+
+  throw new Error("Guest not found");
+
+}

@@ -1,0 +1,43 @@
+/**
+ * ============================================================
+ * Utility Functions
+ * ============================================================
+ */
+
+function getSpreadsheet() {
+  return SpreadsheetApp.getActiveSpreadsheet();
+}
+
+function getSheet(sheetName) {
+  return getSpreadsheet().getSheetByName(sheetName);
+}
+
+function getCurrentTimestamp() {
+  return new Date();
+}
+
+function showToast(message) {
+  SpreadsheetApp.getActive().toast(message);
+}
+
+function testRoomsSheet() {
+  const sheet = getSheet("Rooms");
+  Logger.log(sheet);
+}
+
+function debugSpreadsheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  Logger.log("Spreadsheet Object:");
+  Logger.log(ss);
+
+  if (ss) {
+    Logger.log("Spreadsheet Name: " + ss.getName());
+
+    Logger.log("Available Sheets:");
+
+    ss.getSheets().forEach(sheet => {
+      Logger.log(sheet.getName());
+    });
+  }
+}

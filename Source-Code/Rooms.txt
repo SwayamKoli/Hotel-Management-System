@@ -1,0 +1,102 @@
+<div>
+
+<div class="flex-between">
+
+<div>
+
+<h1 class="page-title">Room Management</h1>
+
+<p class="page-subtitle">Manage all Hotel Rooms</p>
+
+</div>
+
+<button class="btn btn-primary" onclick="showToast('Add Room Module Next')">
+
++ Add Room
+
+</button>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<div class="flex-between">
+
+<input
+id="roomSearch"
+type="text"
+placeholder="🔍 Search Room..."
+style="width:300px"
+onkeyup="filterRooms()">
+
+<button
+class="btn btn-success"
+onclick="loadRoomsData()">
+
+Refresh
+
+</button>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="table-container">
+
+<table id="roomTable">
+
+<thead>
+
+<tr>
+
+<th>Room ID</th>
+
+<th>Room No</th>
+
+<th>Floor</th>
+
+<th>Type</th>
+
+<th>Capacity</th>
+
+<th>Price</th>
+
+<th>Status</th>
+
+<th>Cleaning</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="roomBody">
+
+<tr>
+
+<td colspan="9" style="text-align:center">
+
+Loading Rooms...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+loadRoomsData();
+
+</script>

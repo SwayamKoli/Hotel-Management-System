@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <?!= include('Styles'); ?>
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- Sidebar -->
+    <?!= include('Sidebar'); ?>
+
+    <!-- Main Area -->
+    <div class="main-layout">
+
+        <!-- Header -->
+        <?!= include('Header'); ?>
+
+        <!-- Dynamic Content -->
+        <main id="pageContainer">
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<!-- Global Loading -->
+
+<div id="loadingOverlay" class="loading-overlay hidden">
+
+    <div class="loader"></div>
+
+</div>
+
+
+<!-- Global Modal Container -->
+
+<div id="modalContainer"></div>
+
+
+<?!= include('DashboardPage'); ?>
+<?!= include('RoomsPage'); ?>
+<?!= include('GuestsPage'); ?>
+<?!= include('BookingsPage'); ?>
+<?!= include('ReportsPage'); ?>
+<?!= include('Modals'); ?>
+
+
+<?!= include('Scripts'); ?>
+
+</body>
+</html>

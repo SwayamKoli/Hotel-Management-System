@@ -1,0 +1,58 @@
+<div class="card">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+
+        <div>
+
+            <h2>Guest Management</h2>
+            <p>Manage Guest Check-In & Records</p>
+
+        </div>
+
+        <button
+            id="btnNewGuest"
+            class="btn btn-primary">
+
+            + New Guest
+
+        </button>
+
+    </div>
+
+    <input
+        id="guestSearch"
+        placeholder="Search Guest..."
+        style="margin-bottom:20px;">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Guest ID</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Room</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="guestBody">
+
+            <tr>
+
+                <td colspan="4">
+
+                    Loading...
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>

@@ -1,0 +1,203 @@
+<template id="reportsPage">
+
+<div class="flex-between">
+
+    <div>
+
+        <h2>Reports & Analytics</h2>
+
+        <p class="page-subtitle">
+            Overview of Hotel Performance
+        </p>
+
+    </div>
+
+</div>
+
+<br>
+
+<div class="grid grid-4">
+
+    <div class="stat-card">
+
+        <div class="stat-title">Total Rooms</div>
+
+        <div class="stat-value" id="reportTotalRooms">0</div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">Total Guests</div>
+
+        <div class="stat-value" id="reportTotalGuests">0</div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">Total Bookings</div>
+
+        <div class="stat-value" id="reportTotalBookings">0</div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">Occupied Rooms</div>
+
+        <div class="stat-value" id="reportOccupiedRooms">0</div>
+
+    </div>
+
+</div>
+
+<br>
+
+<div class="grid grid-3">
+
+    <div class="card">
+
+        <h3>Room Status</h3>
+
+        <p>Available :
+            <strong id="reportAvailableRooms">0</strong>
+        </p>
+
+        <p>Occupied :
+            <strong id="reportOccupiedRooms2">0</strong>
+        </p>
+
+        <p>Cleaning :
+            <strong id="reportCleaningRooms">0</strong>
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Booking Status</h3>
+
+        <p>Booked :
+            <strong id="reportBooked">0</strong>
+        </p>
+
+        <p>Checked Out :
+            <strong id="reportCheckedOut">0</strong>
+        </p>
+
+        <p>Cancelled :
+            <strong id="reportCancelled">0</strong>
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Occupancy</h3>
+
+        <div
+            style="
+            font-size:42px;
+            font-weight:bold;
+            color:#4F46E5;"
+            id="reportOccupancy">
+
+            0%
+
+        </div>
+
+    </div>
+
+</div>
+
+<br>
+
+<div class="grid grid-3">
+
+<div class="stat-card">
+
+<div class="stat-title">
+Revenue
+</div>
+
+<div class="stat-value"
+id="reportRevenue">
+
+₹0
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-title">
+Paid Payments
+</div>
+
+<div class="stat-value"
+id="reportPaid">
+
+0
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-title">
+Pending Payments
+</div>
+
+<div class="stat-value"
+id="reportPending">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="grid grid-2">
+
+    <div class="card">
+
+        <h3>Room Status</h3>
+
+        <div style="height:300px;">
+            <canvas id="roomChart"></canvas>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Booking Status</h3>
+
+       <div style="height:300px;">
+          <canvas id="bookingChart"></canvas>
+      </div>
+
+    </div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+    <h3>Revenue Overview</h3>
+
+    <div style="height:280px;">
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+</div>
+
+</template>

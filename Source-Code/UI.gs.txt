@@ -1,0 +1,31 @@
+/**
+ * ==========================================================
+ * Hotel Management System
+ * UI.gs
+ * ----------------------------------------------------------
+ * Handles Web App entry point and HTML rendering.
+ * ==========================================================
+ */
+
+/**
+ * Includes HTML files inside other HTML files.
+ * Example:
+ * <?!= include('Styles'); ?>
+ */
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+/**
+ * Web App Entry Point
+ * Opens Main.html as the application shell.
+ */
+function doGet(e) {
+  return HtmlService.createTemplateFromFile("Main")
+    .evaluate()
+    .setTitle("Hotel Management System");
+}
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}

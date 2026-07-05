@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <base target="_top">
+
+  <?!= include("CSS"); ?>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🏨 Room Management</h2>
+
+<div class="card">
+
+<label>Room Number</label>
+<input id="roomNumber" type="text">
+
+<label>Floor</label>
+<input id="floor" type="number">
+
+<label>Room Type</label>
+
+<select id="roomType">
+
+<option>Standard</option>
+<option>Deluxe</option>
+<option>Executive</option>
+<option>Suite</option>
+<option>Dormitory</option>
+
+</select>
+
+<button onclick="saveRoom()">
+Save Room
+</button>
+
+</div>
+
+</div>
+
+<?!= include("JS"); ?>
+
+</body>
+
+</html>

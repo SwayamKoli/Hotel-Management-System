@@ -1,0 +1,55 @@
+<script>
+
+function saveRoom(){
+
+  const room = {
+
+    roomNumber: document.getElementById("roomNumber").value,
+
+    floor: document.getElementById("floor").value,
+
+    roomType: document.getElementById("roomType").value,
+
+    bedType:"Single",
+
+    capacity:2,
+
+    price:2000,
+
+    status:"Available",
+
+    cleaning:"Clean",
+
+    ac:"AC",
+
+    wifi:"Yes",
+
+    tv:"Yes",
+
+    balcony:"No",
+
+    smoking:"No",
+
+    remarks:""
+
+  };
+
+  google.script.run
+  .withSuccessHandler(function () {
+
+    alert("Room Added Successfully");
+
+    document.getElementById("roomNumber").value = "";
+    document.getElementById("floor").value = "";
+
+  })
+  .withFailureHandler(function (err) {
+
+    alert(err.message);
+
+  })
+  .addRoom(room);
+
+}
+
+</script>

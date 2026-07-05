@@ -1,0 +1,29 @@
+<div class="header">
+
+    <div class="header-left">
+        <h2 id="pageTitle" class="header-title">Dashboard</h2>
+    </div>
+
+    <div class="header-actions">
+
+        <span id="currentDateTime"></span>
+
+        <button
+            id="refreshBtn"
+            class="btn btn-secondary">
+            🔄 Refresh
+        </button>
+
+        <button
+            id="primaryActionBtn"
+            class="btn btn-primary">
+            + Add
+        </button>
+
+        <div class="user-profile">
+            👤 Admin
+        </div>
+
+    </div>
+
+</div>

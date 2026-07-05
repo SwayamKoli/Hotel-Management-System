@@ -1,0 +1,23 @@
+/**
+ * ==========================================================
+ * Hotel Management System
+ * UI.gs
+ * ==========================================================
+ */
+
+/**
+ * Include HTML files inside other HTML files.
+ */
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+/**
+ * Web App Entry Point
+ */
+function doGet(e) {
+  return HtmlService.createTemplateFromFile("Main")
+    .evaluate()
+    .setTitle("Hotel Management System")
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}

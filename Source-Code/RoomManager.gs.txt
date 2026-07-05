@@ -1,0 +1,267 @@
+/**
+ * Generates next Room ID.
+ * Example:
+ * RM0001
+ */
+
+function generateRoomID() {
+
+  const sheet = getSheet(CONFIG.SHEETS.ROOMS);
+
+  const lastRow = sheet.getLastRow();
+
+  if (lastRow <= 1) {
+
+    return "RM0001";
+
+  }
+
+  const ids = sheet.getRange(2,1,lastRow-1).getValues();
+
+  const lastID = ids[ids.length-1][0];
+
+  const number = Number(lastID.replace("RM","")) + 1;
+
+  return "RM" + Utilities.formatString("%04d", number);
+
+}
+
+function addRoom(room) {
+
+  if (roomExists(room.roomNumber)) {
+    throw new Error("Room Number already exists.");
+  }
+
+  const sheet = getRoomsSheet();
+
+  const roomID = generateRoomID();
+
+  sheet.appendRow([
+
+    roomID,
+
+    room.roomNumber,
+
+    room.floor,
+
+    room.roomType,
+
+    room.bedType,
+
+    room.capacity,
+
+    room.price,
+
+    room.status,
+
+    room.cleaning,
+
+    room.ac,
+
+    room.wifi,
+
+    room.tv,
+
+    room.balcony,
+
+    room.smoking,
+
+    "",
+
+    room.remarks
+
+  ]);
+
+  showToast("Room Added Successfully");
+
+}
+
+function generateSampleRooms(){
+
+  const sheet = getSheet(CONFIG.SHEETS.ROOMS);
+
+  sheet.getRange(2,1,sheet.getMaxRows(),16).clearContent();
+
+  let roomNo = 101;
+
+  for(let i=1;i<=50;i++){
+
+    sheet.appendRow([
+
+      generateRoomID(),
+
+      roomNo,
+
+      Math.ceil(i/10),
+
+      ["Standard","Deluxe","Executive","Suite","Dormitory"][Math.floor(Math.random()*5)],
+
+      ["Single","Double","Queen","King"][Math.floor(Math.random()*4)],
+
+      Math.floor(Math.random()*4)+1,
+
+      Math.floor(Math.random()*4000)+1500,
+
+      "Available",
+
+      "Clean",
+
+      Math.random()>0.2?"AC":"Non AC",
+
+      "Yes",
+
+      "Yes",
+
+      Math.random()>0.5?"Yes":"No",
+
+      "No",
+
+      "",
+
+      ""
+
+    ]);
+
+    roomNo++;
+
+  }
+
+}
+
+/**
+ * Returns all rooms.
+ */
+function getRooms() {
+
+  const sheet = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getSheetByName(CONFIG.SHEETS.ROOMS);
+
+  const data = sheet.getDataRange().getValues();
+
+  Logger.log("Rows = " + data.length);
+
+  const rooms = [];
+
+  for (let i = 1; i < data.length; i++) {
+
+    rooms.push({
+
+      roomID: String(data[i][0]),
+      roomNumber: String(data[i][1]),
+      floor: String(data[i][2]),
+      roomType: String(data[i][3]),
+      bedType: String(data[i][4]),
+      capacity: Number(data[i][5]),
+      price: Number(data[i][6]),
+      status: String(data[i][7]),
+      cleaning: String(data[i][8]),
+      ac: String(data[i][9]),
+      wifi: String(data[i][10]),
+      tv: String(data[i][11]),
+      balcony: String(data[i][12]),
+      smoking: String(data[i][13]),
+      lastCleaned: String(data[i][14]),
+      remarks: String(data[i][15])
+
+    });
+
+  }
+
+  Logger.log(JSON.stringify(rooms));
+
+  return rooms;
+
+}
+
+
+/**
+ * Returns one room by Room ID.
+ */
+function getRoomById(roomID) {
+
+  const rooms = getRooms();
+
+  return rooms.find(r => r.roomID === roomID) || null;
+
+}
+
+
+/**
+ * Updates existing room.
+ */
+function updateRoom(room) {
+
+  const sheet = getSheet(CONFIG.SHEETS.ROOMS);
+
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+
+    if (data[i][0] == room.roomID) {
+
+      sheet.getRange(i + 1, 2).setValue(room.roomNumber);
+      sheet.getRange(i + 1, 3).setValue(room.floor);
+      sheet.getRange(i + 1, 4).setValue(room.roomType);
+      sheet.getRange(i + 1, 5).setValue(room.bedType);
+      sheet.getRange(i + 1, 6).setValue(room.capacity);
+      sheet.getRange(i + 1, 7).setValue(room.price);
+      sheet.getRange(i + 1, 8).setValue(room.status);
+      sheet.getRange(i + 1, 9).setValue(room.cleaning);
+      sheet.getRange(i + 1, 10).setValue(room.ac);
+      sheet.getRange(i + 1, 11).setValue(room.wifi);
+      sheet.getRange(i + 1, 12).setValue(room.tv);
+      sheet.getRange(i + 1, 13).setValue(room.balcony);
+      sheet.getRange(i + 1, 14).setValue(room.smoking);
+      sheet.getRange(i + 1, 15).setValue(room.lastCleaned);
+      sheet.getRange(i + 1, 16).setValue(room.remarks);
+
+      return "Room Updated Successfully";
+
+    }
+
+  }
+
+  throw new Error("Room not found.");
+
+}
+
+
+/**
+ * Deletes room.
+ */
+function deleteRoom(roomID) {
+
+  const sheet = getSheet(CONFIG.SHEETS.ROOMS);
+
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+
+    if (data[i][0] == roomID) {
+
+      sheet.deleteRow(i + 1);
+
+      return "Room Deleted Successfully";
+
+    }
+
+  }
+
+  throw new Error("Room not found.");
+
+}
+
+
+/**
+ * Checks if room number already exists.
+ */
+function roomExists(roomNumber) {
+
+  const sheet = getSheet(CONFIG.SHEETS.ROOMS);
+
+  const data = sheet.getRange(2, 2, Math.max(sheet.getLastRow() - 1, 0), 1).getValues();
+
+  return data.flat().includes(roomNumber);
+
+}

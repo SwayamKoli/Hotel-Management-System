@@ -1,0 +1,103 @@
+/**
+ * ==========================================================
+ * REPORT MANAGER
+ * ==========================================================
+ */
+
+function getReportSummary() {
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const roomSheet = ss.getSheetByName(CONFIG.SHEETS.ROOMS);
+  const guestSheet = ss.getSheetByName(CONFIG.SHEETS.GUESTS);
+  const bookingSheet = ss.getSheetByName(CONFIG.SHEETS.BOOKINGS);
+
+  const rooms = roomSheet.getDataRange().getValues();
+  const guests = guestSheet.getDataRange().getValues();
+  const bookings = bookingSheet.getDataRange().getValues();
+
+  let available = 0;
+  let occupied = 0;
+  let cleaning = 0;
+
+  for (let i = 1; i < rooms.length; i++) {
+
+    if (String(rooms[i][7]) === "Available") {
+      available++;
+    } else if (String(rooms[i][7]) === "Occupied") {
+      occupied++;
+    }
+
+    if (String(rooms[i][8]) === "Cleaning") {
+      cleaning++;
+    }
+
+  }
+
+  let booked = 0;
+  let checkedOut = 0;
+  let cancelled = 0;
+
+  for (let i = 1; i < bookings.length; i++) {
+
+    const status = String(bookings[i][16]);
+
+    if (status === "Booked") {
+      booked++;
+    } else if (status === "Checked Out") {
+      checkedOut++;
+    } else if (status === "Cancelled") {
+      cancelled++;
+    }
+
+  }
+
+  // Revenue Summary
+
+    let totalRevenue = 0;
+    let pendingPayments = 0;
+    let paidPayments = 0;
+
+    for (let i = 1; i < bookings.length; i++) {
+
+       const paymentStatus = String(bookings[i][15]);
+        const totalBill = Number(bookings[i][12]) || 0;
+
+        if (paymentStatus === "Paid") {
+       paidPayments++;
+      totalRevenue += totalBill;
+      } else {
+        pendingPayments++;
+      }
+
+    }
+
+  return {
+
+    totalRooms: rooms.length - 1,
+
+    totalGuests: guests.length - 1,
+
+    totalBookings: bookings.length - 1,
+
+    availableRooms: available,
+
+    occupiedRooms: occupied,
+
+    cleaningRooms: cleaning,
+
+    bookedBookings: booked,
+
+    checkedOutBookings: checkedOut,
+
+    cancelledBookings: cancelled,
+
+    totalRevenue: totalRevenue,
+
+    pendingPayments: pendingPayments,
+
+    paidPayments: paidPayments
+
+  };
+
+}

@@ -1,0 +1,1741 @@
+<script>
+
+/* ===========================
+   Global App State
+=========================== */
+
+const App = {
+    currentPage: "dashboard",
+    currentModal: null,
+    initializedPages: new Set()
+
+};
+
+/* ===========================
+   Charts
+=========================== */
+
+let roomChart = null;
+let bookingChart = null;
+let revenueChart = null;
+
+/* ===========================
+   Page Templates
+=========================== */
+
+const Pages = {
+    dashboard: "dashboardPage",
+    rooms: "roomsPage",
+    guests: "guestsPage",
+    bookings: "bookingsPage",
+    reports: "reportsPage"
+};
+
+
+/* ===========================
+   Initialize App
+=========================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    initializeSidebar();
+    initializeHeader();
+
+    loadPage("dashboard");
+
+    setInterval(updateDateTime,1000);
+    updateDateTime();
+
+});
+
+
+/* ===========================
+   Router
+=========================== */
+
+function loadPage(page){
+
+    const template = document.getElementById(Pages[page]);
+
+    if(!template){
+        console.error("Page not found:", page);
+        return;
+    }
+
+    document.getElementById("pageContainer").innerHTML =
+        template.innerHTML;
+
+    App.currentPage = page;
+
+    updateSidebar();
+
+    initializePage(page);
+
+    updateHeader(page);
+    
+function updateHeader(page){
+
+    const titles={
+
+        dashboard:"Dashboard",
+
+        rooms:"Rooms",
+
+        guests:"Guests",
+
+        bookings:"Bookings",
+
+        reports:"Reports"
+
+    };
+
+    const actions={
+
+        dashboard:"+ Add",
+
+        rooms:"+ Add Room",
+
+        guests:"+ Add Guest",
+
+        bookings:"+ New Booking",
+
+        reports:"Export"
+
+    };
+
+    setPageTitle(titles[page]);
+
+    byId("primaryActionBtn").textContent=
+        actions[page];
+
+}
+
+}
+
+
+/* ===========================
+   Sidebar Navigation
+=========================== */
+
+function initializeSidebar(){
+
+    document.querySelectorAll("[data-page]").forEach(item=>{
+
+        item.addEventListener("click",()=>{
+
+            loadPage(item.dataset.page);
+
+        });
+
+    });
+
+}
+
+
+function updateSidebar(){
+
+    document.querySelectorAll("[data-page]").forEach(item=>{
+
+        item.classList.remove("active");
+
+        if(item.dataset.page===App.currentPage){
+
+            item.classList.add("active");
+
+        }
+
+    });
+
+}
+
+
+/* ===========================
+   Page Initializers
+=========================== */
+
+function initializePage(page){
+
+    switch(page){
+
+        case "dashboard":
+            initDashboard();
+            break;
+
+        case "rooms":
+            initRooms();
+            break;
+
+        case "guests":
+            initGuests();
+            break;
+
+        case "bookings":
+            initBookings();
+            break;
+
+        case "reports":
+            initReports();
+            break;
+
+    }
+
+}
+
+
+/* ===========================
+   Dashboard
+=========================== */
+
+function initDashboard(){
+
+    if(typeof loadDashboard==="function"){
+
+        loadDashboard();
+
+    }
+
+}
+
+
+/* ===========================
+   Rooms
+=========================== */
+
+function initRooms(){
+
+    if(typeof loadRooms==="function"){
+
+        loadRooms();
+
+    }
+
+}
+
+
+/* ===========================
+   Guests
+=========================== */
+
+function initGuests(){
+
+    if(typeof loadGuests==="function"){
+
+        loadGuests();
+
+    }
+
+}
+
+
+/* ===========================
+   Bookings
+=========================== */
+
+function initBookings(){
+
+    if(typeof loadBookings==="function"){
+
+        loadBookings();
+
+    }
+
+}
+
+
+/* ===========================
+   Reports
+=========================== */
+
+function initReports(){
+
+    if(typeof loadReports==="function"){
+
+        loadReports();
+
+    }
+
+}
+
+
+/* ===========================
+   Modal Manager
+=========================== */
+
+function openModal(id){
+
+    closeModal();
+
+    const modal=document.getElementById(id);
+
+    if(modal){
+
+        modal.classList.remove("hidden");
+
+        App.currentModal=id;
+
+    }
+
+}
+
+
+function closeModal(){
+
+    if(App.currentModal){
+
+        document.getElementById(App.currentModal)
+            .classList.add("hidden");
+
+    }
+
+    App.currentModal=null;
+
+}
+
+
+document.addEventListener("click",(e)=>{
+
+    if(e.target.classList.contains("modal-overlay")){
+
+        closeModal();
+
+    }
+
+});
+
+
+/* ===========================
+   Loading
+=========================== */
+
+function showLoading(){
+
+    document.getElementById("loadingOverlay")
+        .classList.remove("hidden");
+
+}
+
+function hideLoading(){
+
+    document.getElementById("loadingOverlay")
+        .classList.add("hidden");
+
+}
+
+
+/* ===========================
+   Toast
+=========================== */
+
+function showToast(message){
+
+    const toast=document.createElement("div");
+
+    toast.className="toast";
+
+    toast.textContent=message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(()=>{
+
+        toast.remove();
+
+    },3000);
+
+}
+
+
+/* ===========================
+   Google Apps Script Wrapper
+=========================== */
+
+function runServer(functionName,...args){
+
+    return new Promise((resolve,reject)=>{
+
+        showLoading();
+
+        google.script.run
+
+            .withSuccessHandler(res=>{
+
+                hideLoading();
+
+                console.log("SUCCESS:", functionName, res, typeof res);
+
+                resolve(res);
+
+            })
+
+            .withFailureHandler(err=>{
+
+                hideLoading();
+
+                console.error(err);
+
+                showToast(err.message || "Server Error ❌");
+
+                reject(err);
+
+            })
+
+            [functionName](...args);
+
+    });
+
+}
+
+
+/* ===========================
+   Utility
+=========================== */
+
+function qs(selector){
+
+    return document.querySelector(selector);
+
+}
+
+function qsa(selector){
+
+    return document.querySelectorAll(selector);
+
+}
+
+function byId(id){
+
+    return document.getElementById(id);
+
+}
+
+
+/* ===========================
+   Header Title
+=========================== */
+
+function setPageTitle(title){
+
+    const titleElement=document.getElementById("pageTitle");
+
+    if(titleElement){
+
+        titleElement.textContent=title;
+
+    }
+
+}
+
+/* ===========================
+   Header
+=========================== */
+
+function initializeHeader(){
+
+    byId("refreshBtn").addEventListener("click",()=>{
+
+        initializePage(App.currentPage);
+
+        showToast("Page refreshed Successfully ✅");
+
+    });
+
+    byId("primaryActionBtn").addEventListener("click",()=>{
+
+        switch(App.currentPage){
+
+            case "rooms":
+                openModal("roomModal");
+                break;
+
+            case "guests":
+                openModal("guestModal");
+                break;
+
+            case "bookings":
+                openModal("guestModal");
+                break;
+
+            default:
+                showToast("No action available.❌");
+
+        }
+
+    });
+
+}
+
+
+function updateDateTime(){
+
+    const now=new Date();
+
+    byId("currentDateTime").textContent=
+        now.toLocaleString();
+
+}
+
+/* ======================================================
+   Dashboard
+====================================================== */
+
+function loadDashboard() {
+
+    loadDashboardStats();
+    loadRecentBookings();
+
+    initializeDashboardEvents();
+
+}
+
+
+async function loadDashboardStats() {
+
+    try{
+
+        const stats = await runServer("getDashboardStats");
+
+        byId("availableRooms").textContent =
+            stats.availableRooms ?? 0;
+
+        byId("occupiedRooms").textContent =
+            stats.occupiedRooms ?? 0;
+
+        byId("occupiedCount").textContent =
+            stats.occupiedRooms ?? 0;
+
+        byId("availableCount").textContent =
+            stats.availableRooms ?? 0;
+
+        byId("maintenanceCount").textContent =
+            stats.maintenanceRooms ?? 0;
+
+        byId("totalRooms").textContent =
+            (stats.availableRooms||0)+
+            (stats.occupiedRooms||0)+
+            (stats.maintenanceRooms||0)+
+            (stats.cleaningRooms||0);
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+
+async function loadRecentBookings(){
+
+    try{
+
+        const bookings =
+            await runServer("getRecentBookings");
+
+        const tbody =
+            byId("recentGuestsTable");
+
+        tbody.innerHTML="";
+
+        bookings.forEach(item=>{
+
+            tbody.innerHTML+=`
+
+            <tr>
+
+                <td colspan="4">${item}</td>
+
+            </tr>
+
+            `;
+
+        });
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+
+function initializeDashboardEvents(){
+
+    byId("dashboardAddGuest")
+        .addEventListener("click",()=>{
+
+            loadPage("guests");
+
+        });
+
+    byId("dashboardAddBooking")
+        .addEventListener("click",()=>{
+
+            loadPage("bookings");
+
+        });
+
+    byId("dashboardViewRooms")
+        .addEventListener("click",()=>{
+
+            loadPage("rooms");
+
+        });
+
+}
+
+
+/* ===================================================
+ROOMS
+=================================================== */
+
+let rooms=[];
+
+async function loadRooms(){
+
+    try{
+
+        rooms=await runServer("getRooms");
+
+        console.log("Rooms:", rooms);
+
+        console.table(rooms);
+
+        renderRooms(rooms);
+
+        initializeRoomEvents();
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+
+function renderRooms(data){
+
+    const tbody=byId("roomsTable");
+
+    tbody.innerHTML="";
+
+    data.forEach(room=>{
+
+        tbody.innerHTML+=`
+
+        <tr>
+
+        <td>${room.roomNumber}</td>
+
+        <td>${room.floor}</td>
+
+        <td>${room.roomType}</td>
+
+        <td>${room.bedType}</td>
+
+        <td>${room.capacity}</td>
+
+        <td>₹${room.price}</td>
+
+        <td>
+
+        <span class="badge ${room.status.toLowerCase().replace(/\s+/g,'-')}">
+
+        ${room.status}
+
+        </span>
+
+        </td>
+
+        <td>
+
+        <span
+        class="action-btn edit-room"
+        data-id="${room.roomID}">
+
+        ✏️
+
+        </span>
+
+        <span
+        class="action-btn delete-room"
+        data-id="${room.roomID}">
+
+        🗑️
+
+        </span>
+
+        </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+
+function initializeRoomEvents(){
+
+    byId("roomSearch")
+    .addEventListener("input",filterRooms);
+
+    byId("roomStatusFilter")
+    .addEventListener("change",filterRooms);
+
+    document
+    .querySelectorAll(".edit-room")
+    .forEach(btn=>{
+
+        btn.addEventListener("click",()=>{
+
+            editRoom(btn.dataset.id);
+
+        });
+
+    });
+
+    document
+    .querySelectorAll(".delete-room")
+    .forEach(btn=>{
+
+        btn.addEventListener("click",()=>{
+
+            deleteRoomUI(btn.dataset.id);
+
+        });
+
+    });
+
+}
+
+
+function filterRooms(){
+
+    const search=
+    byId("roomSearch")
+    .value
+    .toLowerCase();
+
+    const status=
+    byId("roomStatusFilter")
+    .value;
+
+    const filtered=
+    rooms.filter(room=>{
+
+        const matchSearch=
+
+        room.roomNumber
+        .toString()
+        .includes(search)
+
+        ||
+
+        room.roomType
+        .toLowerCase()
+        .includes(search);
+
+        const matchStatus=
+
+        status==""
+
+        ||
+
+        room.status==status;
+
+        return matchSearch && matchStatus;
+
+    });
+
+    renderRooms(filtered);
+
+    initializeRoomEvents();
+
+}
+
+
+async function deleteRoomUI(id){
+
+    if(!confirm("Delete this room?"))
+    return;
+
+    await runServer(
+        "deleteRoom",
+        id
+    );
+
+    showToast("Room Deleted Successfully ✅");
+
+    loadRooms();
+
+}
+
+
+async function editRoom(id){
+
+    const room=
+    await runServer(
+        "getRoomById",
+        id
+    );
+
+    console.log(room);
+
+    showToast(
+        "Room editor will open next."
+    );
+
+}
+
+/* ======================================================
+ROOM MODAL
+====================================================== */
+
+let editingRoom = false;
+
+function initializeRoomModal() {
+
+    byId("cancelRoomBtn")
+        .addEventListener("click", closeModal);
+
+    byId("saveRoomBtn")
+        .addEventListener("click", saveRoom);
+
+}
+
+document.addEventListener("DOMContentLoaded", initializeRoomModal);
+
+async function saveRoom() {
+
+    const room = {
+
+        roomID: byId("roomID").value,
+
+        roomNumber: byId("roomNumber").value,
+
+        floor: byId("roomFloor").value,
+
+        roomType: byId("roomType").value,
+
+        bedType: byId("bedType").value,
+
+        capacity: byId("capacity").value,
+
+        price: byId("price").value,
+
+        status: byId("status").value,
+
+        cleaning: byId("cleaning").value,
+
+        ac: byId("ac").checked ? "AC" : "Non AC",
+
+        wifi: byId("wifi").checked ? "Yes" : "No",
+
+        tv: byId("tv").checked ? "Yes" : "No",
+
+        balcony: byId("balcony").checked ? "Yes" : "No",
+
+        smoking: byId("smoking").checked ? "Yes" : "No",
+
+        guestID: "",
+
+        remarks: byId("remarks").value
+
+    };
+
+    if (editingRoom) {
+
+        await runServer("updateRoom", room);
+
+        showToast("Room Updated Successfully ✅");
+
+    } else {
+
+        await runServer("addRoom", room);
+
+        showToast("Room Added Successfully ✅");
+
+    }
+
+    closeModal();
+
+    loadRooms();
+
+}
+
+async function editRoom(id) {
+
+    const room = await runServer("getRoomById", id);
+
+    editingRoom = true;
+
+    byId("roomModalTitle").textContent = "Edit Room";
+
+    byId("roomID").value = room.roomID;
+
+    byId("roomNumber").value = room.roomNumber;
+
+    byId("roomFloor").value = room.floor;
+
+    byId("roomType").value = room.roomType;
+
+    byId("bedType").value = room.bedType;
+
+    byId("capacity").value = room.capacity;
+
+    byId("price").value = room.price;
+
+    byId("status").value = room.status;
+
+    byId("cleaning").value = room.cleaning;
+
+    byId("ac").checked = room.ac == "AC";
+
+    byId("wifi").checked = room.wifi == "Yes";
+
+    byId("tv").checked = room.tv == "Yes";
+
+    byId("balcony").checked = room.balcony == "Yes";
+
+    byId("smoking").checked = room.smoking == "Yes";
+
+    byId("remarks").value = room.remarks;
+
+    openModal("roomModal");
+
+}
+
+/* ==========================================================
+   GUESTS
+========================================================== */
+
+let guests = [];
+let filteredGuests = [];
+
+async function loadGuests() {
+
+    try {
+
+        guests = await runServer("getGuests");
+
+        console.log("Guests Data:", guests);
+
+        filteredGuests = [...guests];
+
+        renderGuests();
+
+        initializeGuestEvents();
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+function renderGuests() {
+
+    const tbody = byId("guestTable");
+
+    tbody.innerHTML = "";
+
+    if (filteredGuests.length === 0) {
+
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="8" style="text-align:center;padding:25px;">
+                No Guests Found
+            </td>
+        </tr>`;
+
+        return;
+
+    }
+
+    filteredGuests.forEach(g => {
+
+        tbody.innerHTML += `
+
+        <tr>
+
+            <td>
+
+                <strong>${g.name}</strong><br>
+
+                <small>${g.email || "-"}</small>
+
+            </td>
+
+            <td>${g.mobile}</td>
+
+            <td>${g.roomNumber}</td>
+
+            <td>${g.guests}</td>
+
+            <td>${g.checkIn}</td>
+
+            <td>${g.checkOut}</td>
+
+            <td>${g.paymentStatus}</td>
+
+            <td>
+
+                <button
+                    class="btn btn-secondary guest-edit"
+                    data-id="${g.guestID}">
+
+                    Edit
+
+                </button>
+
+                <button
+                    class="btn btn-danger guest-delete"
+                    data-id="${g.guestID}">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+function initializeGuestEvents() {
+
+    byId("guestSearch")
+        .addEventListener("input", filterGuests);
+
+    byId("guestStatusFilter")
+        .addEventListener("change", filterGuests);
+
+    byId("addGuestBtn")
+        .addEventListener("click", () => {
+
+            openModal("guestModal");
+
+        });
+
+    document
+        .querySelectorAll(".guest-delete")
+        .forEach(btn => {
+
+            btn.addEventListener("click", () => {
+
+                deleteGuestUI(btn.dataset.id);
+
+            });
+
+        });
+
+    document
+        .querySelectorAll(".guest-edit")
+        .forEach(btn => {
+
+            btn.addEventListener("click", () => {
+
+                editGuest(btn.dataset.id);
+
+            });
+
+        });
+
+}
+
+function filterGuests() {
+
+    const search =
+        byId("guestSearch")
+        .value
+        .toLowerCase();
+
+    const status =
+        byId("guestStatusFilter")
+        .value
+        .toLowerCase();
+
+    filteredGuests = guests.filter(g => {
+
+        const matchSearch =
+
+            (g.name || "")
+            .toLowerCase()
+            .includes(search)
+
+            ||
+
+            (g.mobile || "")
+            .toString()
+            .includes(search)
+
+            ||
+
+            (g.roomNumber || "")
+            .toString()
+            .includes(search);
+
+        const matchStatus =
+
+            status === ""
+
+            ||
+
+            (g.paymentStatus || "")
+            .toLowerCase()
+            .includes(status);
+
+        return matchSearch && matchStatus;
+
+    });
+
+    renderGuests();
+
+    initializeGuestEvents();
+
+}
+
+async function deleteGuestUI(id) {
+
+    if (!confirm("Delete this guest?"))
+        return;
+
+    await runServer("deleteGuest", id);
+
+    showToast("Guest Deleted Successfully ✅");
+
+    loadGuests();
+
+}
+
+async function editGuest(id) {
+
+    const guest = await runServer(
+        "getGuestById",
+        id
+    );
+
+    console.log(guest);
+
+    showToast(
+        "Guest Edit Modal will be connected next."
+    );
+
+}
+
+/* ==========================================================
+   GUEST MODAL
+========================================================== */
+
+let editingGuest = false;
+
+document.addEventListener("DOMContentLoaded", initializeGuestModal);
+
+function initializeGuestModal(){
+
+    byId("cancelGuestBtn")
+        .addEventListener("click", closeModal);
+
+    byId("saveGuestBtn")
+        .addEventListener("click", saveGuestUI);
+
+}
+
+async function loadAvailableRooms(){
+
+    const rooms =
+        await runServer("getAvailableRooms");
+
+    const select =
+        byId("guestRoom");
+
+    select.innerHTML = "";
+
+    rooms.forEach(room=>{
+
+        select.innerHTML += `
+
+        <option
+        value="${room.roomNumber}">
+
+        ${room.roomNumber}
+        - ${room.roomType}
+
+        </option>
+
+        `;
+
+    });
+
+}
+
+async function saveGuestUI(){
+
+    const roomText =
+        byId("guestRoom")
+        .selectedOptions[0]
+        .text;
+
+    const roomType =
+        roomText.split("-")[1].trim();
+
+    const guest = {
+
+        name: byId("guestName").value,
+
+        mobile: byId("guestMobile").value,
+
+        email: byId("guestEmail").value,
+
+        aadhaar: byId("guestAadhaar").value,
+
+        guests: byId("guestCount").value,
+
+        roomNumber: byId("guestRoom").value,
+
+        roomType: roomType,
+
+        checkIn: byId("guestCheckIn").value,
+
+        checkOut: byId("guestCheckOut").value
+
+    };
+
+    await runServer(
+        "saveGuest",
+        guest
+    );
+
+    showToast(
+        "Guest Saved Successfully ✅"
+    );
+
+    closeModal();
+
+    loadGuests();
+
+}
+
+const oldOpenModal = openModal;
+
+openModal = async function(id){
+
+    oldOpenModal(id);
+
+    if(id==="guestModal"){
+
+        await loadAvailableRooms();
+
+    }
+
+}
+
+/* ==========================================================
+   BOOKINGS
+========================================================== */
+
+let bookings = [];
+let filteredBookings = [];
+
+async function loadBookings() {
+
+    try {
+
+        bookings = await runServer("getBookings");
+
+        console.log(bookings);
+        console.log("Length:", bookings.length);
+        console.table(bookings);
+
+        filteredBookings = [...bookings];
+
+        renderBookings();
+
+        initializeBookingEvents();
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+function renderBookings() {
+
+    byId("bookingTotal").textContent =
+        bookings.length;
+
+    byId("bookingBooked").textContent =
+    bookings.filter(b =>
+        (b.bookingStatus || "").trim().toLowerCase() === "booked"
+    ).length;
+
+    byId("bookingCheckedIn").textContent =
+    bookings.filter(b =>
+        (b.bookingStatus || "").trim().toLowerCase() === "checked in"
+    ).length;
+
+    byId("bookingCheckedOut").textContent =
+    bookings.filter(b =>
+        (b.bookingStatus || "").trim().toLowerCase() === "checked out"
+    ).length;
+
+    const tbody =
+        byId("bookingTable");
+
+    tbody.innerHTML="";
+
+    filteredBookings.forEach(b=>{
+
+        tbody.innerHTML+=`
+
+<tr>
+
+<td>${b.bookingID}</td>
+
+<td>${b.guestName}</td>
+
+<td>${b.roomNumber}</td>
+
+<td>${b.checkIn}</td>
+
+<td>${b.checkOut}</td>
+
+<td>${b.paymentStatus}</td>
+
+<td>
+
+<span class="badge ${b.bookingStatus.toLowerCase().replace(/\s+/g,'-')}">
+${b.bookingStatus}
+</span>
+
+</td>
+
+<td>
+
+${
+
+b.bookingStatus === "Booked"
+
+? `
+
+<button
+class="btn btn-success checkOutBtn"
+data-id="${b.bookingID}">
+Check Out
+</button>
+
+<button
+class="btn btn-danger cancelBookingBtn"
+data-id="${b.bookingID}">
+Cancel
+</button>
+
+`
+
+: b.bookingStatus === "Checked In"
+
+? `
+
+<button
+class="btn btn-success checkOutBtn"
+data-id="${b.bookingID}">
+Check Out
+</button>
+
+`
+
+: b.bookingStatus === "Checked Out"
+
+? `
+
+<span class="badge badge-success">
+Completed
+</span>
+
+`
+
+: `
+
+<span class="badge badge-danger">
+Cancelled
+</span>
+
+`
+
+}
+
+</td>
+
+</tr>
+
+`;
+
+    });
+
+}
+
+function initializeBookingEvents(){
+
+    byId("bookingSearch")
+    .addEventListener("input",filterBookings);
+
+    byId("bookingFilter")
+    .addEventListener("change",filterBookings);
+
+    document
+    .querySelectorAll(".checkOutBtn")
+    .forEach(btn=>{
+
+        btn.addEventListener("click",()=>{
+
+            checkoutBooking(btn.dataset.id);
+
+        });
+
+    });
+
+    document
+    .querySelectorAll(".cancelBookingBtn")
+    .forEach(btn=>{
+
+        btn.addEventListener("click",()=>{
+
+            cancelBookingUI(btn.dataset.id);
+
+        });
+
+    });
+
+}
+
+function filterBookings(){
+
+    const search=
+    byId("bookingSearch")
+    .value
+    .toLowerCase();
+
+    const status=
+    byId("bookingFilter")
+    .value;
+
+    filteredBookings=
+    bookings.filter(b=>{
+
+        const s=
+
+        b.guestName
+        .toLowerCase()
+        .includes(search)
+
+        ||
+
+        b.roomNumber
+        .toString()
+        .includes(search);
+
+        const st=
+
+        status==""
+
+        ||
+
+        b.bookingStatus==status;
+
+        return s&&st;
+
+    });
+
+    renderBookings();
+
+    initializeBookingEvents();
+
+}
+
+async function checkoutBooking(id){
+
+    await runServer(
+        "checkOutBooking",
+        id
+    );
+
+    showToast("Guest Checked Out Successfully ✅");
+
+    await loadBookings();
+
+    if (typeof loadDashboard === "function") {
+        await loadDashboard();
+    }
+
+    if (typeof loadRooms === "function") {
+        await loadRooms();
+    }
+
+}
+
+async function cancelBookingUI(id){
+
+    await runServer(
+        "cancelBooking",
+        id
+    );
+
+    showToast("Booking Cancelled Successfully ✅");
+
+    await loadBookings();
+
+    if (typeof loadDashboard === "function") {
+        await loadDashboard();
+    }
+
+}
+
+/* ==========================================================
+   REPORTS
+========================================================== */
+
+async function loadReports(){
+
+    try{
+
+        const report =
+            await runServer("getReportSummary");
+
+        byId("reportTotalRooms").textContent =
+            report.totalRooms;
+
+        byId("reportTotalGuests").textContent =
+            report.totalGuests;
+
+        byId("reportTotalBookings").textContent =
+            report.totalBookings;
+
+        byId("reportOccupiedRooms").textContent =
+            report.occupiedRooms;
+
+        byId("reportAvailableRooms").textContent =
+            report.availableRooms;
+
+        byId("reportOccupiedRooms2").textContent =
+            report.occupiedRooms;
+
+        byId("reportCleaningRooms").textContent =
+            report.cleaningRooms;
+
+        byId("reportBooked").textContent =
+            report.bookedBookings;
+
+        byId("reportCheckedOut").textContent =
+            report.checkedOutBookings;
+
+        byId("reportCancelled").textContent =
+            report.cancelledBookings;
+
+        const occupancy = report.totalRooms === 0
+            ? 0
+            : Math.round(
+                (report.occupiedRooms / report.totalRooms) * 100
+              );
+
+        byId("reportOccupancy").textContent =
+            occupancy + "%";
+
+        drawReportCharts(report);
+
+        byId("reportRevenue").textContent =
+            "₹" + report.totalRevenue;
+
+        byId("reportPaid").textContent =
+            report.paidPayments;
+
+        byId("reportPending").textContent =
+            report.pendingPayments;
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+function drawReportCharts(report) {
+
+    if (roomChart) roomChart.destroy();
+    if (bookingChart) bookingChart.destroy();
+    if (revenueChart) revenueChart.destroy();
+
+    /* =========================================
+       ROOM STATUS
+    ========================================= */
+
+    roomChart = new Chart(byId("roomChart"), {
+
+        type: "pie",
+
+        data: {
+
+            labels: [
+                "Available",
+                "Occupied",
+                "Cleaning"
+            ],
+
+            datasets: [{
+
+                data: [
+                    report.availableRooms,
+                    report.occupiedRooms,
+                    report.cleaningRooms
+                ],
+
+                backgroundColor: [
+                    "#22C55E",
+                    "#EF4444",
+                    "#F59E0B"
+                ]
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    position: "bottom"
+                }
+
+            }
+
+        }
+
+    });
+
+    /* =========================================
+       BOOKING STATUS
+    ========================================= */
+
+    bookingChart = new Chart(byId("bookingChart"), {
+
+        type: "doughnut",
+
+        data: {
+
+            labels: [
+                "Booked",
+                "Checked Out",
+                "Cancelled"
+            ],
+
+            datasets: [{
+
+                data: [
+                    report.bookedBookings,
+                    report.checkedOutBookings,
+                    report.cancelledBookings
+                ],
+
+                backgroundColor: [
+                    "#3B82F6",
+                    "#10B981",
+                    "#EF4444"
+                ]
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    position: "bottom"
+                }
+
+            }
+
+        }
+
+    });
+
+    /* =========================================
+       REVENUE
+    ========================================= */
+
+    revenueChart = new Chart(byId("revenueChart"), {
+
+        type: "bar",
+
+        data: {
+
+            labels: ["Revenue"],
+
+            datasets: [{
+
+                label: "Revenue",
+
+                data: [
+                    report.totalRevenue
+                ],
+
+                backgroundColor: "#4F46E5"
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            },
+
+            scales: {
+
+                y: {
+                    beginAtZero: true
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+</script>

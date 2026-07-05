@@ -1,0 +1,40 @@
+/**
+ * ============================================================
+ * Room Service
+ * Handles all Room database operations.
+ * ============================================================
+ */
+
+/**
+ * Returns the Rooms sheet.
+ */
+function getRoomsSheet() {
+  return getSheet(CONFIG.SHEETS.ROOMS);
+}
+
+/**
+ * Returns all room records.
+ */
+function getAllRooms() {
+
+  const sheet = getRoomsSheet();
+
+  if (sheet.getLastRow() <= 1) {
+    return [];
+  }
+
+  return sheet
+    .getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn())
+    .getValues();
+}
+
+/**
+ * Checks whether a room number already exists.
+ */
+function roomExists(roomNumber) {
+
+  const rooms = getAllRooms();
+
+  return rooms.some(room => String(room[1]) === String(roomNumber));
+
+}

@@ -1,0 +1,143 @@
+<template id="bookingsPage">
+
+<div class="flex-between">
+
+    <div>
+
+        <h2>Booking Management</h2>
+
+        <p class="page-subtitle">
+            Manage bookings, check-ins and check-outs
+        </p>
+
+    </div>
+
+</div>
+
+<br>
+
+<!-- Dashboard Cards -->
+
+<div class="grid grid-4">
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Total Bookings
+        </div>
+
+        <div class="stat-value" id="bookingTotal">
+            0
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Booked
+        </div>
+
+        <div class="stat-value" id="bookingBooked">
+            0
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Checked In
+        </div>
+
+        <div class="stat-value" id="bookingCheckedIn">
+            0
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Checked Out
+        </div>
+
+        <div class="stat-value" id="bookingCheckedOut">
+            0
+        </div>
+
+    </div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<div class="flex-between">
+
+<input
+id="bookingSearch"
+placeholder="Search Guest / Room">
+
+<select id="bookingFilter">
+
+<option value="">All</option>
+
+<option>Booked</option>
+
+<option>Checked In</option>
+
+<option>Checked Out</option>
+
+<option>Cancelled</option>
+
+</select>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Booking</th>
+
+<th>Guest</th>
+
+<th>Room</th>
+
+<th>Check In</th>
+
+<th>Check Out</th>
+
+<th>Payment</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="bookingTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</template>
